@@ -4,7 +4,7 @@
 # https://www.youtube.com/watch?v=uqHjc7hlqd0
 # When writing function beware of local aliases
 ssh_exec_func() {
-    local ssh_opt="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o VisualHostKey=no -o ServerAliveInterval=7 -o ServerAliveCountMax=4 -o ControlPath=none -o ControlMaster=no -q"
+    local ssh_opt=("-o" "StrictHostKeyChecking=no" "-o" "UserKnownHostsFile=/dev/null" "-o" "VisualHostKey=no" "-o" "ServerAliveInterval=7" "-o" "ServerAliveCountMax=4" "-o" "ControlPath=none" "-o" "ControlMaster=no" "-q")
 
     usage() {
         printf "%s\n" "Usage: ssh_exec_func [SSH_OPT ...] HOST -- FUNCTION_NAME [FUNCTION_ARG ...]"
@@ -38,5 +38,6 @@ ssh_exec_func() {
     ((sep_pos++))
     # FUNCTION_ARGs
     declare -a func_args=("${args[@]:$sep_pos}")
-    ssh $ssh_opt ${ssh_extra_opt[@]} "$(declare -p func_args; declare -f $func;); $func \"\${func_args[@]}\""
+    # shellcheck disable=SC2029
+    ssh "${ssh_opt[@]}" "${ssh_extra_opt[@]}" "$(declare -p func_args; declare -f "${func[0]}";); \"${func[0]}\" \"\${func_args[@]}\""
 }
