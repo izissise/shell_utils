@@ -38,6 +38,9 @@ ssh_exec_func() {
     ((sep_pos++))
     # FUNCTION_ARGs
     declare -a func_args=("${args[@]:$sep_pos}")
-    # shellcheck disable=SC2029
-    ssh "${ssh_opt[@]}" "${ssh_extra_opt[@]}" "$(declare -p func_args; declare -f "${func[0]}";); \"${func[0]}\" \"\${func_args[@]}\""
+    if [ "${#func_args}" = "0" ]; then
+        ssh "${ssh_opt[@]}" "${ssh_extra_opt[@]}" "$(declare -f "${func[0]}";); \"${func[0]}\""
+    else
+        ssh "${ssh_opt[@]}" "${ssh_extra_opt[@]}" "$(declare -p func_args; declare -f "${func[0]}";); \"${func[0]}\" \"\${func_args[@]}\""
+    fi
 }
